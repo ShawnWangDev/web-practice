@@ -1,0 +1,63 @@
+{% extends "layout/base.html" %}
+{% block title %}{{ title }}{% endblock %}
+{% block content %}
+<form action="/record/add" method="POST">
+  {{ form.csrf_token }}
+  <br>
+  <div class="row d-flex justify-content-center">
+    <div class="col-md-8">
+      <div class="card px-5 py-5">
+        <div class="form-data">
+          <div class="forms-inputs mb-4">
+            <label>{{ form.outline.label }}</label>
+            {{ form.outline(class="form-control") }}
+          </div>
+          <div class="row">
+            <div class="forms-inputs mb-4 col-4">
+              <label>{{ form.category_list.label }}</label>
+              {{ form.category_list(class="form-select") }}
+            </div>
+            <div class="forms-inputs mb-4 col-4">
+              <label>{{ form.subject_list.label }}</label>
+              {{ form.subject_list(class="form-select") }}
+            </div>
+          </div>
+          <div class="forms-inputs mb-4 col-6">
+            <label>{{ form.tomato_amount.label }}</label>
+            {{ form.tomato_amount(class="form-control") }}
+          </div>
+          <div class="forms-inputs mb-4 col-6">
+            <label>{{ form.tomato_duration.label }}</label>
+            {{ form.tomato_duration(class="form-control") }}
+          </div>
+          <div class="mb-3">
+            {{ form.submit(class="btn btn-primary") }}
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <br>
+  <script src="https://cdn.jsdelivr.net/npm/jquery@3.6.1/dist/jquery.min.js"></script>
+  <script>
+    $('#category_list').change(function () {
+      let selectedCategoryId = $(this).find("option:selected").val();
+      $.ajax({
+        url: "/setting/category/get/" + selectedCategoryId,
+        type: 'GET',
+        dataType: 'json',
+        cache: false,
+        success: function (data) {
+          console.log(data)
+          $("#subject_list").empty();
+          $(data).each(function (index, item) {
+            console.log(item.id)
+            console.log(item.name)
+            $("#subject_list").append($('<option></option>').attr('value', item.id).text(item.name));
+          })
+        }
+      });
+    })
+  </script>
+</form>
+{% endblock %}

@@ -1,0 +1,33 @@
+{% extends "layout/base.html" %}
+{% block title %}{{ title }}{% endblock %}
+{% block content %}
+{% if not current_user.is_authenticated %}
+<form action="/sign/in" method="post">
+  {{ form.csrf_token }}
+  <br><br>
+  <div class="row d-flex justify-content-center">
+    <div class="col-md-6">
+      <div class="card px-5 py-5">
+        <div class="form-data">
+          <div class="forms-inputs mb-4">
+            <span>{{ form.username.label }}</span>
+            {{ form.username(class="form-control w-100") }}
+          </div>
+          <div class="forms-inputs mb-4">
+            <span>{{ form.password.label }}</span>
+            {{ form.password(class="form-control w-100") }}
+          </div>
+          <div class="mb-3">
+            {{ form.submit(class="btn btn-dark w-100") }}
+          </div>
+          {{ tip }}
+        </div>
+      </div>
+    </div>
+  </div>
+</form>
+{% else %}
+<br>
+<a class="btn btn-primary" href="/record">current tomatoes</a>
+{% endif %}
+{% endblock %}

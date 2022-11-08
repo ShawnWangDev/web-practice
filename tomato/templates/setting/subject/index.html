@@ -1,0 +1,27 @@
+{% extends "layout/base.html" %}
+{% block title %}{{ title }}{% endblock %}
+{% block content %}
+<div class="row justify-content-md-center">
+  <div class="col-8">
+    <a class="btn btn-primary m-2" href="/setting/subject/add">add item</a>
+    <table class="table table-striped align-middle">
+    <thead>
+      <tr>
+        <th scope="col">name</th>
+        <th scope="col">category</th>
+        <th scope="col" class="col-4" colspan="2">operation</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for subject in subjects %}
+      <tr>
+        <td>{{ subject.name }}</td>
+        <td>{{ subject.category.name }}</td>
+        <td><a class="btn btn-secondary">update</a></td>
+        <td><a class="btn btn-danger">delete</a></td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+{% endblock %}

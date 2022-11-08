@@ -1,0 +1,52 @@
+{% extends "layout/base.html" %}
+{% block title %}{{ title }}{% endblock %}
+{% block content %}
+<br>
+<form action="/record/enter/{{form.record_id}}" method="POST">
+  {{ form.csrf_token }}
+  <div class="row d-flex justify-content-center">
+    <div class="col-md-8">
+      <div class="card">
+        <div class="card-header">
+          <b>subject: </b>{{record.subject.category.name}}-{{ record.subject.name }}
+        </div>
+        <div class="card-body">
+          <h4>outline</h4>{{ record.outline }}
+          <div class="form-data">
+            <i>create at: {{record.create_at}}</i>
+            <br><br>
+            {% for i in range(record.tomato_amount) %}
+            <img src="{{url_for('static',filename='asset/image/tomato-icon-32.png')}}">
+            {% endfor %}
+            <br>
+            <label>each tomato duration</label>
+            <b>{{record.tomato_duration}}</b>min
+            <br>
+            <label>tomato amount</label>
+            <b>{{record.tomato_amount}}</b>
+            <br><br>
+            <h4>{{ form.interference.label }}</h4>
+            <div class="forms-inputs mb-4">
+              {{ form.interference(class="form-control") }}
+            </div>
+            <h4>start time</h4>
+            <div class="forms-inputs mb-4 col-6">
+              {{ form.start_time.label }}
+              {{ form.start_time(class="form-control") }}
+            </div>
+            <h4>finish time</h4>
+            <div class="forms-inputs mb-4 col-6">
+              {{ form.finish_time.label }}
+              {{ form.finish_time(class="form-control") }}
+            </div>
+            <div>
+              {{ datetime_hint }}
+            </div>
+            {{form.submit(class="btn btn-primary")}}
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</form>
+{% endblock %}

@@ -1,0 +1,40 @@
+{% extends "layout/base.html" %}
+{% block title %}{{ title }}{% endblock %}
+{% block content %}
+<div class="row justify-content-md-center">
+  <div class="col-10">
+    <a class="btn btn-primary m-2" href="/record/add">add</a>
+    <a class="btn btn-primary m-2" href="/record">current tomatoes</a>
+    <table class="table table-striped align-middle">
+      <thead>
+        <tr>
+          <th scope="col">subject</th>
+          <th scope="col" class="col-4">outline</th>
+          <th scope="col">tomato</th>
+          <th scope="col">detail</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for r in records %}
+        <tr>
+          <td>{{r.subject.category.name}}-{{r.subject.name}}<br>{{r.create_at.strftime('%m-%d %H:%M')}}</td>
+          <td>{{r.outline}}</td>
+          <td>
+            tomato: <b>{{r.tomato_amount}}/{{r.tomato_duration}}min</b>
+            <br>
+            total: <b>{{r.tomato_amount*r.tomato_duration}}min</b>
+          </td>
+          <td>
+            start/finish: <b>{{r.start_time.strftime('%H:%M')}}/{{r.finish_time.strftime('%H:%M')}}</b>
+            <br>
+            actual: <b>{{r.actual_duration}}</b>
+            <br>
+            proportion: <b>{{"%.2f"|format(r.working_time_proportion*100)}}%</b>
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+{% endblock %}

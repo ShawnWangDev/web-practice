@@ -1,0 +1,30 @@
+{% extends "layout/base.html" %}
+{% block title %}{{ title }}{% endblock %}
+{% block content %}
+<br>
+<div class="row d-flex justify-content-center">
+  <div class="col-md-8">
+    <div class="card">
+      <div class="card-header">
+        add a subject
+      </div>
+      <div class="card-body">
+        <form method="POST" action="/setting/subject/add">
+          {{ form.csrf_token }}
+          <div class="forms-inputs mb-4 col-6">
+            <label>{{ form.category_list.label }}</label>
+            {{ form.category_list(class="form-select") }}
+          </div>
+          <div class="forms-inputs mb-4">
+            <label>{{ form.name.label }}</label>
+            {{ form.name(class="form-control") }}
+          </div>
+          <div class="forms-inputs mb-4 col-6">
+            {{ form.submit(class="btn btn-primary") }}
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}
