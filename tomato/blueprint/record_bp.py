@@ -5,7 +5,7 @@ from flask_login import current_user, login_required
 from flask_wtf import FlaskForm
 from markupsafe import escape
 from wtforms import (DateTimeField, HiddenField, IntegerField, SelectField,
-                    SubmitField, TextAreaField)
+                     SubmitField, TextAreaField)
 from wtforms.validators import DataRequired, InputRequired, Length, NumberRange
 
 import service.record_serv as record_serv
@@ -89,6 +89,7 @@ def enter(record_id):
         # redirect to 'add record' page if the user visiting finished record
         if record.is_done == True:
             return redirect(url_for('record_page.add'))
+        form.start_time.data = datetime.now()
         form.finish_time.data = datetime.now()+timedelta(minutes=expected_duration)
     # POST
     if request.method == 'POST':
@@ -102,7 +103,7 @@ def enter(record_id):
         print(
             f'-----\n\nactual min:{actual_duration_minutes}\ntotoal tomato:{totoal_tomato_duration}\n expected:{expected_duration}')
         if actual_duration_minutes <= 0 or actual_duration_minutes < expected_duration:
-            
+
             return redirect(url_for('record_page.enter', record_id=rid))
 
         record.actual_duration = actual_duration
