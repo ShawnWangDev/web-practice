@@ -100,14 +100,10 @@ def enter(record_id):
         actual_duration = finish_time-start_time
         actual_duration_sec = actual_duration.total_seconds()
         actual_duration_minutes = int(actual_duration_sec/60)
-        print(
-            f'-----\n\nactual min:{actual_duration_minutes}\ntotoal tomato:{totoal_tomato_duration}\n expected:{expected_duration}')
         if actual_duration_minutes <= 0 or actual_duration_minutes < expected_duration:
-
             return redirect(url_for('record_page.enter', record_id=rid))
-
         record.actual_duration = actual_duration
-        record.working_time_proportion = actual_duration_minutes/expected_duration
+        record.working_time_proportion = expected_duration/actual_duration_minutes
         record.interference = form.interference.data
         # start_time = form.start_time.data
         # finish_time = form.finish_time.data
