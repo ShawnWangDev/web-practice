@@ -34,13 +34,16 @@
               {{ form.start_time.label }}
               {{ form.start_time(class="form-control") }}
             </div>
+            <div class="mb-4 col-10">
+              break time:
+              {{ record_dateimes.break_time_iminutes }} min
+              &nbsp;/&nbsp;expected finish time: 
+              {{ record_dateimes.expected_finish_time }}
+            </div>
             <h4>finish time</h4>
             <div class="forms-inputs mb-4 col-8">
               {{ form.finish_time.label }}
               {{ form.finish_time(class="form-control") }}
-            </div>
-            <div>
-              {{ datetime_hint }}
             </div>
             {{form.submit(class="btn btn-primary")}}
           </div>

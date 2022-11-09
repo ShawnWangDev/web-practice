@@ -5,12 +5,14 @@ from flask_login import current_user, login_required
 from flask_wtf import FlaskForm
 from markupsafe import escape
 from wtforms import (DateTimeField, HiddenField, IntegerField, SelectField,
-                    SubmitField, TextAreaField)
+                     SubmitField, TextAreaField)
 from wtforms.validators import DataRequired, InputRequired, Length, NumberRange
 
 import service.record_serv as record_serv
 import service.setting.category_serv as category_serv
 import service.setting.subject_serv as subject_serv
+
+from models.record_datetime import RecordDatetime
 
 record_page = Blueprint('record_page', __name__,
                         template_folder='templates')
@@ -80,34 +82,39 @@ def enter(record_id):
     form.record_id = rid
     user_id = current_user.id
     record = record_serv.get_by_id(rid, user_id)
-    total_tomato_duration = record.tomato_amount*record.tomato_duration
-    break_time = int(total_tomato_duration/6)
-    expected_duration = total_tomato_duration + break_time
+    tomato_minutes = record.tomato_amount*record.tomato_duration
     # GET
     if request.method == 'GET':
         # not allow user to enter the finished tomato record if the record had done
         # redirect to 'add record' page if the user visiting finished record
         if record.is_done == True:
             return redirect(url_for('record_page.add'))
-        form.start_time.data = datetime.now()
-        form.finish_time.data = datetime.now()+timedelta(minutes=expected_duration)
+        start_time = datetime.now()
+        finish_time = datetime.now()+timedelta(minutes=tomato_minutes)
+        form.start_time.data = start_time
+        form.finish_time.data = finish_time
+        rec_dt = RecordDatetime(start_time, finish_time, tomato_minutes)
     # POST
     if request.method == 'POST':
         start_time = form.start_time.data
         finish_time = form.finish_time.data
-        record.start_time = start_time
-        record.finish_time = finish_time
-        actual_duration = finish_time-start_time
-        actual_duration_sec = actual_duration.total_seconds()
-        actual_duration_minutes = int(actual_duration_sec/60)
-        if actual_duration_minutes <= 0 or actual_duration_minutes < expected_duration:
+        create_time = record.create_at.replace(second=0, microsecond=0)
+        rec_dt = RecordDatetime(start_time, finish_time, tomato_minutes)
+        # valid conditon 1:
+        #   actual working duration equals or greater than total tomato duration
+        #   actual working duration less than one day
+        # valid condition 2:
+        #   submitted start time greater than create time of the record
+        if not (rec_dt.is_actual_duration_valid() and start_time > create_time):
             return redirect(url_for('record_page.enter', record_id=rid))
-        record.actual_duration = actual_duration
-        record.working_time_proportion = total_tomato_duration/actual_duration_minutes
+        record.start_time = rec_dt.start_time
+        record.finish_time = rec_dt.finish_time
+        record.actual_duration = rec_dt.actual_duration
+        record.working_time_proportion = rec_dt.working_duration_proportion()
         record.interference = form.interference.data
         record_serv.update_finished(record)
         return redirect(url_for('record_page.finished'))
-    return render_template('record/enter.html', title='Do it!', form=form, record=record)
+    return render_template('record/enter.html', title='Do it!', form=form, record=record, record_dateimes=rec_dt)
 
 
 @record_page.route('finished')
