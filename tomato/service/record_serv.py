@@ -32,6 +32,8 @@ def update_finished(record):
     subject_dao.record_amount_increment_one(record.subject_id, record.user_id)
     record_dao.update_start_and_finish_time(record)
 
+def update_start_and_finish_time(record):
+    record_dao.update_start_and_finish_time(record)
 
 def get_tomato_info(record_id: int, user_id: int) -> Record:
     return record_dao.get_tomato_info(record_id, user_id)

@@ -18,6 +18,9 @@ record_page = Blueprint('record_page', __name__,
                         template_folder='templates')
 
 
+DATETIME_FORMAT = r'%Y/%m/%d %H:%M'
+
+
 class RecordForm(FlaskForm):
     outline = TextAreaField('outline', validators=[Length(max=128)])
     category_list = SelectField('category', validators=[
@@ -32,14 +35,13 @@ class RecordForm(FlaskForm):
 
 
 class EnterRecordForm(FlaskForm):
-    datetime_format = r'%Y/%m/%d %H:%M'
     now = datetime.now()
     record_id = HiddenField()
     interference = TextAreaField('interference', validators=[Length(max=64)])
     start_time = DateTimeField('start time', validators=[
-        InputRequired()], format=datetime_format, default=now)
+        InputRequired()], format=DATETIME_FORMAT)
     finish_time = DateTimeField('finish time', validators=[
-        InputRequired()], format=datetime_format)
+        InputRequired()], format=DATETIME_FORMAT)
     submit = SubmitField('finish!')
 
 
@@ -89,23 +91,27 @@ def enter(record_id):
         # redirect to 'add record' page if the user visiting finished record
         if record.is_done == True:
             return redirect(url_for('record_page.add'))
-        start_time = datetime.now()
-        finish_time = datetime.now()+timedelta(minutes=tomato_minutes)
+        start_time = datetime.now().replace(second=0, microsecond=0)
+        # a person cannot create a record at 0 second time(such as 17:05:00)
+        # then start the tomato immediately at 17:05:00.
+        # so delay one minute(+timedelta(minutes=1)).
+        if start_time == record.create_at.replace(second=0, microsecond=0):
+            start_time = start_time+timedelta(minutes=1)
+        rec_dt = RecordDatetime(start_time, tomato_minutes)
         form.start_time.data = start_time
-        form.finish_time.data = finish_time
-        rec_dt = RecordDatetime(start_time, finish_time, tomato_minutes)
+        form.finish_time.data = rec_dt.expected_finish_time
     # POST
     if request.method == 'POST':
         start_time = form.start_time.data
         finish_time = form.finish_time.data
         create_time = record.create_at.replace(second=0, microsecond=0)
-        rec_dt = RecordDatetime(start_time, finish_time, tomato_minutes)
+        rec_dt = RecordDatetime(start_time, tomato_minutes)
         # valid conditon 1:
         #   actual working duration equals or greater than total tomato duration
         #   actual working duration less than one day
         # valid condition 2:
         #   submitted start time greater than create time of the record
-        if not (rec_dt.is_actual_duration_valid() and start_time > create_time):
+        if not (rec_dt.is_actual_duration_valid(finish_time) and start_time > create_time):
             return redirect(url_for('record_page.enter', record_id=rid))
         record.start_time = rec_dt.start_time
         record.finish_time = rec_dt.finish_time
@@ -114,7 +120,7 @@ def enter(record_id):
         record.interference = form.interference.data
         record_serv.update_finished(record)
         return redirect(url_for('record_page.finished'))
-    return render_template('record/enter.html', title='Do it!', form=form, record=record, record_dateimes=rec_dt)
+    return render_template('record/enter.html', title='Do it!', form=form, record=record, record_datetimes=rec_dt)
 
 
 @record_page.route('finished')
@@ -122,3 +128,34 @@ def enter(record_id):
 def finished():
     records = record_serv.get_finished(current_user.id)
     return render_template('record/finished.html', title='finished', records=records)
+
+
+@record_page.route('update/<record_id>', methods=['GET', 'POST'])
+@login_required
+def update(record_id):
+    rid = escape(record_id)
+    user_id = current_user.id
+    record = record_serv.get_by_id(rid, user_id)
+    tomato_minutes = record.tomato_amount*record.tomato_duration
+    form = EnterRecordForm()
+    form.record_id = rid
+    if request.method == 'GET':
+        form.interference.data = record.interference
+        form.start_time.data = record.start_time
+        form.finish_time.data = record.finish_time
+        form.submit.data = 'update'
+        rec_dt = RecordDatetime(record.start_time, tomato_minutes)
+        return render_template('record/update.html', title='update', form=form, record=record, record_datetimes=rec_dt)
+    # POST
+    if request.method == 'POST':
+        start_time = form.start_time.data
+        finish_time = form.finish_time.data
+        rec_dt = RecordDatetime(start_time, tomato_minutes)
+        if not (rec_dt.is_actual_duration_valid(finish_time) and start_time > record.create_at):
+            return redirect(url_for('record_page.update', record_id=rid))
+        record.start_time = rec_dt.start_time
+        record.finish_time = rec_dt.finish_time
+        record.actual_duration = rec_dt.actual_duration
+        record.working_time_proportion = rec_dt.working_duration_proportion()
+        record_serv.update_start_and_finish_time(record)
+        return redirect(url_for('record_page.finished'))

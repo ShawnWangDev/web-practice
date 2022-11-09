@@ -2,7 +2,7 @@
 {% block title %}{{ title }}{% endblock %}
 {% block content %}
 <br>
-<form action="/record/enter/{{form.record_id}}" method="POST">
+<form action="/record/update/{{form.record_id}}" method="POST">
   {{ form.csrf_token }}
   <div class="row d-flex justify-content-center">
     <div class="col-md-8">

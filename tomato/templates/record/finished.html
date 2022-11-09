@@ -12,6 +12,7 @@
           <th scope="col" class="col-4">outline</th>
           <th scope="col">tomato</th>
           <th scope="col">detail</th>
+          <th scope="col">operation</th>
         </tr>
       </thead>
       <tbody>
@@ -30,6 +31,9 @@
             actual: <b>{{r.actual_duration}}</b>
             <br>
             proportion: <b>{{"%.2f"|format(r.working_time_proportion*100)}}%</b>
+          </td>
+          <td>
+            <a class="btn btn-primary" href="/record/update/{{r.id}}">update</a>
           </td>
         </tr>
         {% endfor %}
