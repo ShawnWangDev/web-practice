@@ -5,7 +5,7 @@ from flask_login import current_user, login_required
 from flask_wtf import FlaskForm
 from markupsafe import escape
 from wtforms import (DateTimeField, HiddenField, IntegerField, SelectField,
-                     SubmitField, TextAreaField)
+                    SubmitField, TextAreaField)
 from wtforms.validators import DataRequired, InputRequired, Length, NumberRange
 
 import service.record_serv as record_serv
@@ -80,9 +80,9 @@ def enter(record_id):
     form.record_id = rid
     user_id = current_user.id
     record = record_serv.get_by_id(rid, user_id)
-    totoal_tomato_duration = record.tomato_amount*record.tomato_duration
-    break_time = int(totoal_tomato_duration/6)
-    expected_duration = totoal_tomato_duration + break_time
+    total_tomato_duration = record.tomato_amount*record.tomato_duration
+    break_time = int(total_tomato_duration/6)
+    expected_duration = total_tomato_duration + break_time
     # GET
     if request.method == 'GET':
         # not allow user to enter the finished tomato record if the record had done
@@ -103,15 +103,8 @@ def enter(record_id):
         if actual_duration_minutes <= 0 or actual_duration_minutes < expected_duration:
             return redirect(url_for('record_page.enter', record_id=rid))
         record.actual_duration = actual_duration
-        record.working_time_proportion = expected_duration/actual_duration_minutes
+        record.working_time_proportion = total_tomato_duration/actual_duration_minutes
         record.interference = form.interference.data
-        # start_time = form.start_time.data
-        # finish_time = form.finish_time.data
-        # actual_duration = finish_time-start_time
-        # interference = form.interference.data
-        # proportion = totoal_tomato_duration/actual_duration_minutes
-        # record_serv.update_finished(
-        #     start_time, finish_time, actual_duration, proportion, interference, rid, user_id)
         record_serv.update_finished(record)
         return redirect(url_for('record_page.finished'))
     return render_template('record/enter.html', title='Do it!', form=form, record=record)
