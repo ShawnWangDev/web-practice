@@ -24,8 +24,8 @@ def get_current(user_id):
     return record_dao.get_not_finished_within_24_hours(user_id)
 
 
-def get_finished(user_id: int) -> Record:
-    return record_dao.get_finished(user_id)
+def get_today_finished(user_id: int) -> Record:
+    return record_dao.get_today_finished(user_id)
 
 
 def update_finished(record):

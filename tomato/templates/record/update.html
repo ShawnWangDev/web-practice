@@ -18,6 +18,14 @@
             {% for i in range(record.tomato_amount) %}
             <img src="{{url_for('static',filename='asset/image/tomato-icon-32.png')}}">
             {% endfor %}
+            <h4>{{ form.outline.label }}</h4>
+            <div class="forms-inputs mb-4">
+              {{ form.outline(class="form-control") }}
+            </div>
+            <h4>{{ form.interference.label }}</h4>
+            <div class="forms-inputs mb-4">
+              {{ form.interference(class="form-control") }}
+            </div>
             <br>
             <label>each tomato duration</label>
             <b>{{record.tomato_duration}}</b>min
@@ -25,10 +33,6 @@
             <label>tomato amount</label>
             <b>{{record.tomato_amount}}</b>
             <br><br>
-            <h4>{{ form.interference.label }}</h4>
-            <div class="forms-inputs mb-4">
-              {{ form.interference(class="form-control") }}
-            </div>
             <h4>start time</h4>
             <div class="forms-inputs mb-4 col-8">
               {{ form.start_time.label }}
@@ -37,7 +41,8 @@
             <div class="mb-4 col-10">
               break time:
               {{ record_datetimes.break_time_iminutes }} min
-              &nbsp;/&nbsp;expected finish time: 
+              <br>
+              expected finish time: 
               {{ record_datetimes.expected_finish_time }}
             </div>
             <h4>finish time</h4>

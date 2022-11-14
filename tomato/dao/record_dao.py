@@ -28,12 +28,12 @@ def update_start_and_finish_time(record: Record):
 
 def get_not_finished_within_24_hours(user_id: int):
     current_time = datetime.now()
-    return Record.query.filter(Record.user_id == user_id\
-        , Record.is_done == False, Record.visable == '1'\
-        , Record.create_at > current_time-timedelta(days=1))\
+    return Record.query.filter(Record.user_id == user_id, Record.is_done == False, Record.visable == '1', Record.create_at > current_time-timedelta(days=1))\
         .all()
 
 
-def get_finished(user_id: int) -> Record:
-    return Record.query.filter(Record.user_id == user_id\
-        , Record.is_done == True).order_by(Record.finish_time.desc()).all()
+def get_today_finished(user_id: int) -> Record:
+    datetime_now_before_1_day = datetime.now()-timedelta(days=1)
+    print(f"\n====={datetime_now_before_1_day}")
+    return Record.query.filter(Record.user_id == user_id, Record.is_done == True, Record.create_at > datetime_now_before_1_day)\
+        .order_by(Record.finish_time.desc()).all()

@@ -9,7 +9,7 @@
       <thead>
         <tr>
           <th scope="col">subject</th>
-          <th scope="col" class="col-4">outline</th>
+          <th scope="col" class="col-4">outline and<br>interference</th>
           <th scope="col">tomato</th>
           <th scope="col">detail</th>
           <th scope="col">operation</th>
@@ -19,7 +19,7 @@
         {% for r in records %}
         <tr>
           <td>{{r.subject.category.name}}-{{r.subject.name}}<br>{{r.create_at.strftime('%m-%d %H:%M')}}</td>
-          <td>{{r.outline}}</td>
+          <td><b>{{r.outline}}</b><br>{{r.interference}}</td>
           <td>
             tomato: <b>{{r.tomato_amount}}/{{r.tomato_duration}}min</b>
             <br>

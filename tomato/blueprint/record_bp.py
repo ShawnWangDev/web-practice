@@ -35,6 +35,7 @@ class RecordForm(FlaskForm):
 
 
 class EnterRecordForm(FlaskForm):
+    outline = TextAreaField('outline', validators=[Length(max=128)])
     now = datetime.now()
     record_id = HiddenField()
     interference = TextAreaField('interference', validators=[Length(max=64)])
@@ -119,15 +120,15 @@ def enter(record_id):
         record.working_time_proportion = rec_dt.working_duration_proportion()
         record.interference = form.interference.data
         record_serv.update_finished(record)
-        return redirect(url_for('record_page.finished'))
+        return redirect(url_for('record_page.doday_finished'))
     return render_template('record/enter.html', title='Do it!', form=form, record=record, record_datetimes=rec_dt)
 
 
-@record_page.route('finished')
+@record_page.route('today_finished')
 @login_required
-def finished():
-    records = record_serv.get_finished(current_user.id)
-    return render_template('record/finished.html', title='finished', records=records)
+def today_finished():
+    records = record_serv.get_today_finished(current_user.id)
+    return render_template('record/today_finished.html', title='today finished', records=records)
 
 
 @record_page.route('update/<record_id>', methods=['GET', 'POST'])
@@ -141,6 +142,8 @@ def update(record_id):
     form.record_id = rid
     if request.method == 'GET':
         form.interference.data = record.interference
+        form.outline.data = record.outline
+        form.interference.data = record.interference
         form.start_time.data = record.start_time
         form.finish_time.data = record.finish_time
         form.submit.data = 'update'
@@ -151,11 +154,14 @@ def update(record_id):
         start_time = form.start_time.data
         finish_time = form.finish_time.data
         rec_dt = RecordDatetime(start_time, tomato_minutes)
-        if not (rec_dt.is_actual_duration_valid(finish_time) and start_time > record.create_at):
+        is_actual_duration_valid=rec_dt.is_actual_duration_valid(finish_time)
+        if not (is_actual_duration_valid and start_time > record.create_at):
             return redirect(url_for('record_page.update', record_id=rid))
+        record.interference = form.interference.data
+        record.outline = form.outline.data
         record.start_time = rec_dt.start_time
         record.finish_time = rec_dt.finish_time
         record.actual_duration = rec_dt.actual_duration
         record.working_time_proportion = rec_dt.working_duration_proportion()
         record_serv.update_start_and_finish_time(record)
-        return redirect(url_for('record_page.finished'))
+        return redirect(url_for('record_page.today_finished'))
