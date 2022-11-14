@@ -120,7 +120,7 @@ def enter(record_id):
         record.working_time_proportion = rec_dt.working_duration_proportion()
         record.interference = form.interference.data
         record_serv.update_finished(record)
-        return redirect(url_for('record_page.doday_finished'))
+        return redirect(url_for('record_page.today_finished'))
     return render_template('record/enter.html', title='Do it!', form=form, record=record, record_datetimes=rec_dt)
 
 
