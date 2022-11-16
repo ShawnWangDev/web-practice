@@ -34,5 +34,5 @@ def get_not_finished_within_24_hours(user_id: int):
 
 def get_today_finished(user_id: int) -> Record:
     datetime_now_before_1_day = datetime.now()-timedelta(days=1)
-    return Record.query.filter(Record.user_id == user_id, Record.is_done == True, Record.create_at > datetime_now_before_1_day)\
+    return Record.query.filter(Record.user_id == user_id, Record.is_done == True, Record.finish_time > datetime_now_before_1_day)\
         .order_by(Record.finish_time.desc()).all()
