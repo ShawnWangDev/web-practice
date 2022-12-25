@@ -165,3 +165,10 @@ def update(record_id):
         record.working_time_proportion = rec_dt.working_duration_proportion()
         record_serv.update_start_and_finish_time(record)
         return redirect(url_for('record_page.get_24_hours_finished'))
+
+
+@record_page.route('subject/<subject_id>')
+@login_required
+def get_by_subject(subject_id):
+    record_list=record_serv.get_all_by_subject_id_and_user_id(subject_id,current_user.id)
+    return render_template('record/list.html',records=record_list)

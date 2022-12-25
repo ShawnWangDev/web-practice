@@ -13,6 +13,4 @@ home_page = Blueprint('home_page', __name__,
 def index():
     form = SigninForm()
     subject_info_list=subject_serv.all_info_get_by_user_id(current_user.id)
-    for subject in subject_info_list:
-        print(f'{subject.category_name} / {subject.subject_name} / {subject.total_time}')
     return render_template('index.html', title='home', form=form,subject_info=subject_info_list)

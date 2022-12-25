@@ -12,6 +12,8 @@ def add(record: Record):
 def get_all_by_user_id(user_id):
     return Record.query.filter(Record.user_id == user_id)
 
+def get_all_by_subject_id_and_user_id(subject_id,user_id):
+    return Record.query.filter(Record.subject_id==subject_id,Record.user_id==user_id)
 
 def get_total_minutes_by_subject_id_and_user_id(subject_id, user_id):
     record_list=Record.query.filter(Record.subject_id == subject_id,
