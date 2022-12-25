@@ -15,6 +15,11 @@ def add(user_id: int, subject_id: int, outline: str, amount: int, duration: int,
     record.total_duration = total_duration
     record_dao.add(record)
 
+def get_all_by_user_id(user_id):
+    return record_dao.get_all_by_user_id(user_id)
+
+def get_total_minutes_by_subject_id_and_user_id(subject_id, user_id):
+    return record_dao.get_total_minutes_by_subject_id_and_user_id(subject_id,user_id)
 
 def get_by_id(id, user_id) -> Record:
     return record_dao.get_by_id(id, user_id)
@@ -24,8 +29,8 @@ def get_current(user_id):
     return record_dao.get_not_finished_within_24_hours(user_id)
 
 
-def get_today_finished(user_id: int) -> Record:
-    return record_dao.get_today_finished(user_id)
+def get_24_hours_finished(user_id: int) -> Record:
+    return record_dao.get_24_hours_finished(user_id)
 
 
 def update_finished(record):

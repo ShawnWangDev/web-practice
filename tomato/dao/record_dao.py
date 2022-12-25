@@ -9,8 +9,21 @@ def add(record: Record):
     db.session.commit()
 
 
+def get_all_by_user_id(user_id):
+    return Record.query.filter(Record.user_id == user_id)
+
+
+def get_total_minutes_by_subject_id_and_user_id(subject_id, user_id):
+    record_list=Record.query.filter(Record.subject_id == subject_id,
+                        Record.user_id == user_id)
+    total=timedelta(days=0,hours=0,minutes=0,seconds=0,milliseconds=0)
+    for record in record_list:
+        total=total+record.total_duration
+    return total
+
+
 def get_by_id(id, user_id) -> Record:
-    return Record.query.filter(Record.id == id and Record.user_id == user_id).first()
+    return Record.query.filter(Record.id == id, Record.user_id == user_id).first()
 
 
 def update_start_and_finish_time(record: Record):
@@ -32,7 +45,7 @@ def get_not_finished_within_24_hours(user_id: int):
         .all()
 
 
-def get_today_finished(user_id: int) -> Record:
+def get_24_hours_finished(user_id: int) -> Record:
     datetime_now_before_1_day = datetime.now()-timedelta(days=1)
     return Record.query.filter(Record.user_id == user_id, Record.is_done == True, Record.finish_time > datetime_now_before_1_day)\
         .order_by(Record.finish_time.desc()).all()

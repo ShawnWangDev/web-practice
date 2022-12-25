@@ -60,10 +60,10 @@ def add():
     if request.method == 'GET':
         user_id = current_user.id
         category_list = []
-        for c in category_serv.get_all(user_id):
+        for c in category_serv.get_all_by_user_id(user_id):
             category_list.append((int(c.id), c.name))
         subject_list = []
-        for s in subject_serv.get_by_id(category_list[0][0], user_id):
+        for s in subject_serv.get_all_by_category_id_and_user_id(category_list[0][0], user_id):
             subject_list.append((int(s.id), s.name))
         form.category_list.choices = category_list
         form.subject_list.choices = subject_list
@@ -120,15 +120,15 @@ def enter(record_id):
         record.working_time_proportion = rec_dt.working_duration_proportion()
         record.interference = form.interference.data
         record_serv.update_finished(record)
-        return redirect(url_for('record_page.today_finished'))
+        return redirect(url_for('record_page.get_24_hours_finished'))
     return render_template('record/enter.html', title='Do it!', form=form, record=record, record_datetimes=rec_dt)
 
 
-@record_page.route('today_finished')
+@record_page.route('24_hours_finished')
 @login_required
-def today_finished():
-    records = record_serv.get_today_finished(current_user.id)
-    return render_template('record/today_finished.html', title='today finished', records=records)
+def get_24_hours_finished():
+    records = record_serv.get_24_hours_finished(current_user.id)
+    return render_template('record/24_hours_finished.html', title='24 hours finished', records=records)
 
 
 @record_page.route('update/<record_id>', methods=['GET', 'POST'])
@@ -164,4 +164,4 @@ def update(record_id):
         record.actual_duration = rec_dt.actual_duration
         record.working_time_proportion = rec_dt.working_duration_proportion()
         record_serv.update_start_and_finish_time(record)
-        return redirect(url_for('record_page.today_finished'))
+        return redirect(url_for('record_page.get_24_hours_finished'))

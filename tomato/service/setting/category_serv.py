@@ -2,8 +2,8 @@ import dao.setting.category_dao as category_dao
 from models.setting.category import Category
 
 
-def get_all(user_id: int):
-    return category_dao.get_all(user_id)
+def get_all_by_user_id(user_id: int):
+    return category_dao.get_all_by_user_id(user_id)
 
 
 def add(user_id: int, name: str):
@@ -11,5 +11,5 @@ def add(user_id: int, name: str):
     category_dao.add(category)
 
 
-def get_by_id(id: int, user_id: int):
-    return category_dao.get_by_id(id, user_id)
+def get_one_by_id_and_user_id(id: int, user_id: int):
+    return category_dao.get_one_by_id_and_user_id(id, user_id)

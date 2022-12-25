@@ -29,5 +29,23 @@
 {% else %}
 <br>
 <a class="btn btn-primary" href="/record">current tomatoes</a>
+<table class="table table-striped align-middle">
+  <thead>
+    <tr>
+      <th scope="col">category</th>
+      <th scope="col">subject</th>
+      <th scope="col">time</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for sub in subject_info %}
+    <tr>
+      <td>{{ sub.category_name }}</td>
+      <td>{{ sub.subject_name }}</td>
+      <td>{{ sub.total_time }}</td>
+    </tr>
+    {% endfor %}
+
+
 {% endif %}
 {% endblock %}

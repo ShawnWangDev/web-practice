@@ -22,7 +22,7 @@ class SubjectForm(FlaskForm):
 @subject_page.route('/')
 @login_required
 def subject_index():
-    subjects = subject_serv.get_all(current_user.id)
+    subjects = subject_serv.get_all_by_user_id(current_user.id)
     return render_template('setting/subject/index.html', title="subject", subjects=subjects)
 
 
@@ -31,7 +31,7 @@ def subject_index():
 def subject_add():
     form = SubjectForm()
     category_list = [(int(c.id), c.name)
-                    for c in category_serv.get_all(current_user.id)]
+                    for c in category_serv.get_all_by_user_id(current_user.id)]
     form.category_list.choices = category_list
     if form.validate_on_submit():
         subject_serv.add(current_user.id, form.name.data,

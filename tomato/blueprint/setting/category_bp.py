@@ -40,7 +40,7 @@ def category_add():
 @login_required
 def get_by_id(id):
     id = escape(id)
-    category = category_serv.get_by_id(id, current_user.id)
+    category = category_serv.get_one_by_id_and_user_id(id, current_user.id)
     subject_list = []
     for subject in category.subjects:
         subject_dict = {}
