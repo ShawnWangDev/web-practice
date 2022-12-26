@@ -12,15 +12,17 @@ def add(record: Record):
 def get_all_by_user_id(user_id):
     return Record.query.filter(Record.user_id == user_id)
 
-def get_all_by_subject_id_and_user_id(subject_id,user_id):
-    return Record.query.filter(Record.subject_id==subject_id,Record.user_id==user_id)
+
+def get_all_by_subject_id_and_user_id(subject_id, user_id):
+    return Record.query.filter(Record.subject_id == subject_id, Record.user_id == user_id).order_by(Record.create_at.desc()).all()
+
 
 def get_total_minutes_by_subject_id_and_user_id(subject_id, user_id):
-    record_list=Record.query.filter(Record.subject_id == subject_id,
-                        Record.user_id == user_id)
-    total=timedelta(days=0,hours=0,minutes=0,seconds=0,milliseconds=0)
+    record_list = Record.query.filter(Record.subject_id == subject_id,
+                                    Record.user_id == user_id)
+    total = timedelta(days=0, hours=0, minutes=0, seconds=0, milliseconds=0)
     for record in record_list:
-        total=total+record.total_duration
+        total = total+record.total_duration
     return total
 
 

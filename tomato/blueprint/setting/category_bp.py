@@ -22,7 +22,7 @@ class CategoryForm(FlaskForm):
 @categrory_page.route('/')
 @login_required
 def categrory_index():
-    categories = category_serv.get_all(current_user.id)
+    categories = category_serv.get_all_by_user_id(current_user.id)
     return render_template('setting/category/index.html', title="category", categories=categories)
 
 

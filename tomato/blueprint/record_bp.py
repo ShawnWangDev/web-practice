@@ -5,7 +5,7 @@ from flask_login import current_user, login_required
 from flask_wtf import FlaskForm
 from markupsafe import escape
 from wtforms import (DateTimeField, HiddenField, IntegerField, SelectField,
-                     SubmitField, TextAreaField)
+                    SubmitField, TextAreaField)
 from wtforms.validators import DataRequired, InputRequired, Length, NumberRange
 
 import service.record_serv as record_serv
@@ -128,7 +128,7 @@ def enter(record_id):
 @login_required
 def get_24_hours_finished():
     records = record_serv.get_24_hours_finished(current_user.id)
-    return render_template('record/24_hours_finished.html', title='24 hours finished', records=records)
+    return render_template('record/list.html', title='24 hours finished', records=records)
 
 
 @record_page.route('update/<record_id>', methods=['GET', 'POST'])
@@ -144,17 +144,19 @@ def update(record_id):
         form.interference.data = record.interference
         form.outline.data = record.outline
         form.interference.data = record.interference
-        form.start_time.data = record.start_time
-        form.finish_time.data = record.finish_time
-        form.submit.data = 'update'
+        if not record.start_time:
+            record.start_time=datetime.now().replace(second=0,microsecond=0)
         rec_dt = RecordDatetime(record.start_time, tomato_minutes)
+        form.start_time.data = record.start_time
+        form.finish_time.data = rec_dt.expected_finish_time
+        form.submit.data = 'update'
         return render_template('record/update.html', title='update', form=form, record=record, record_datetimes=rec_dt)
     # POST
     if request.method == 'POST':
         start_time = form.start_time.data
         finish_time = form.finish_time.data
         rec_dt = RecordDatetime(start_time, tomato_minutes)
-        is_actual_duration_valid=rec_dt.is_actual_duration_valid(finish_time)
+        is_actual_duration_valid = rec_dt.is_actual_duration_valid(finish_time)
         if not (is_actual_duration_valid and start_time > record.create_at):
             return redirect(url_for('record_page.update', record_id=rid))
         record.interference = form.interference.data
@@ -170,5 +172,6 @@ def update(record_id):
 @record_page.route('subject/<subject_id>')
 @login_required
 def get_by_subject(subject_id):
-    record_list=record_serv.get_all_by_subject_id_and_user_id(subject_id,current_user.id)
-    return render_template('record/list.html',records=record_list)
+    record_list = record_serv.get_all_by_subject_id_and_user_id(
+        subject_id, current_user.id)
+    return render_template('record/list.html', records=record_list)

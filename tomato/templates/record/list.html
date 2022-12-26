@@ -1,31 +1,43 @@
 {% extends "layout/base.html" %}
 {% block title %}{{ title }}{% endblock %}
 {% block content %}
-<div class="row justify-content-md-center align-middle">
+<div class="row justify-content-md-center">
   <div class="col-10">
-    <a class="btn btn-primary m-2" href="/record/add">add a tomato</a>
-    <a class="btn btn-success m-2" href="/record/24_hours_finished"> 24 hours finished</a>
-    <table class="table table-striped">
+    <a class="btn btn-primary m-2" href="/record/add">add</a>
+    <a class="btn btn-primary m-2" href="/record">current tomatoes</a>
+    <table class="table table-striped align-middle">
       <thead>
         <tr>
           <th scope="col">subject</th>
-          <th scope="col" class="col-3">outline</th>
+          <th scope="col" class="col-4">outline and<br>interference</th>
           <th scope="col">tomato</th>
+          <th scope="col">detail</th>
+          <th scope="col">operation</th>
         </tr>
       </thead>
       <tbody>
         {% for r in records %}
         <tr>
+          <td>{{r.subject.category.name}}-{{r.subject.name}}<br>{{r.create_at.strftime('%m-%d %H:%M')}}</td>
+          <td><b>{{r.outline}}</b><br>{{r.interference}}</td>
           <td>
-            {{r.subject.category.name}}-{{r.subject.name}}
-            <br>
-            create at {{r.create_at.strftime('%m-%d %H:%M')}}
-          </td>
-          <td>{{r.outline}}</td>
-          <td>
-            tomato: <b>{{r.tomato_duration}}min/{{r.tomato_amount}}</b>
+            tomato: <b>{{r.tomato_amount}}/{{r.tomato_duration}}min</b>
             <br>
             total: <b>{{r.tomato_amount*r.tomato_duration}}min</b>
+          </td>
+          <td>
+            {% if r.start_time and r.finish_time %}
+            start/finish: <b>{{r.start_time.strftime('%H:%M') or '-'}} /{{r.finish_time.strftime('%H:%M') or '-'}}</b>
+            <br>
+            actual: <b>{{r.actual_duration}}</b>
+            <br>
+            proportion: <b>{{"%.2f"|format(r.working_time_proportion*100)}}%</b>
+            {% else %}
+            <b>not finished</b>
+            {% endif %}
+          </td>
+          <td>
+            <a class="btn btn-primary" href="/record/update/{{r.id}}">update</a>
           </td>
         </tr>
         {% endfor %}
